@@ -1,7 +1,3 @@
-
-# Created by https://www.toptal.com/developers/gitignore/api/c++,codeblocks
-# Edit at https://www.toptal.com/developers/gitignore?templates=c++,codeblocks
-
 ### C++ ###
 # Prerequisites
 *.d
@@ -43,5 +39,3 @@
 # generated directories
 bin/
 obj/
-
-# End of https://www.toptal.com/developers/gitignore/api/c++,codeblocks
