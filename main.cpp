@@ -1,6 +1,7 @@
 #include <iostream>
 #include <SDL.h>
 #include <SDL_image.h>
+#include "headers/planet.h"
 
 using namespace std;
 const int SCREEN_WIDTH = 800;
@@ -23,6 +24,7 @@ void logSDLError(std::ostream& os,
 }
 void quitSDL(SDL_Window* window, SDL_Renderer* renderer);
 void waitUntilKeyPressed();
+
 
 SDL_Texture* loadTexture(string path, SDL_Renderer* renderer);
 SDL_Rect earthrect;
@@ -50,7 +52,7 @@ int main(int argc, char* argv[])
 //                control=loadTexture("down.png",renderer);
 //                break;
 //                case SDLK_LEFT:
-//                control=loadTexture("left.png",renderer);
+//                control=loadTexture("left.png",renderer); // In ảnh theo bàn phím
 //                break;
 //                case SDLK_RIGHT:
 //                control=loadTexture("right.png",renderer);
@@ -60,16 +62,66 @@ int main(int argc, char* argv[])
 //            SDL_RenderPresent(renderer);
 //        }
 //    }
-    SDL_Texture* background = loadTexture("images/background.png",renderer);
-    SDL_RenderCopy(renderer,background,NULL,NULL);
-    earthrect.x = 225;
-    earthrect.y = 139;
-    earthrect.h = 322;
-    earthrect.w = 350;
-    SDL_Texture* earth = loadTexture("images/earth.png",renderer);
-    SDL_RenderCopy(renderer,earth,NULL,&earthrect);
-    SDL_RenderPresent(renderer);
-    waitUntilKeyPressed();
+    LTexture EarthTexture;
+    if(EarthTexture.loadFromFile("images/earth.png",renderer)==0)
+            cout << "Failed to load Earth\n";
+    bool quit = false;
+    SDL_Event e;
+    double degrees = 0;
+    SDL_RendererFlip flipType = SDL_FLIP_NONE;
+    while(!quit) {
+        while(SDL_PollEvent(&e)!=0) {
+            if(e.type==SDL_QUIT) {
+                quit = true;
+            }
+            else if(e.type == SDL_KEYDOWN)
+            switch (e.key.keysym.sym) {
+//                case SDLK_a:
+//                degrees-=60;
+//                break;
+//
+//                case SDLK_d:
+//                degrees+=60;
+//                break;
+
+                case SDLK_q:
+                //flipType = SDL_FLIP_HORIZONTAL;
+                quit = true;
+                break;
+
+                case SDLK_w:
+                flipType = SDL_FLIP_NONE;
+                break;
+
+                case SDLK_e:
+                flipType = SDL_FLIP_VERTICAL;
+                break;
+
+            }
+        }
+        if(degrees == 360) degrees = 0;
+            degrees += 0.5;
+        //Clear screen
+        SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0xFF, 0xFF );
+        SDL_RenderClear( renderer );
+
+        //Render arrow
+        EarthTexture.render( ( SCREEN_WIDTH - EarthTexture.getWidth() ) / 2, ( SCREEN_HEIGHT - EarthTexture.getHeight() ) / 2, NULL, degrees, NULL, flipType,renderer);
+
+        //Update screen
+        SDL_RenderPresent( renderer );
+    }
+
+//    SDL_Texture* background = loadTexture("images/background.png",renderer);
+//    SDL_RenderCopy(renderer,background,NULL,NULL);
+//    earthrect.x = 225;
+//    earthrect.y = 139;
+//    earthrect.h = 322;            //In earth ra giữa màn hình
+//    earthrect.w = 350;
+//    SDL_Texture* earth = loadTexture("images/earth.png",renderer);
+//    SDL_RenderCopy(renderer,earth,NULL,&earthrect);
+//    SDL_RenderPresent(renderer);
+//    waitUntilKeyPressed();
     quitSDL(window, renderer);
     return 0;
 }
