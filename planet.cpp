@@ -16,9 +16,11 @@ void Planet::render(SDL_Renderer* renderer)
     //Set rendering space and render to screen
     //int x = ( 800 - EarthTexture.getWidth())/2;
     //int y = ( 600 - EarthTexture.getHeight())/2;
-    SDL_Rect renderQuad = { (800 - mWidth)/2, (800-mHeight)/2 , mWidth, mHeight };
+//    mWidth /= 1.7f;
+//    mHeight /=1.7f;
+    planetQuad = { (800 - mWidth/1.7f)/2, (800-mHeight/1.7f)/2 , mWidth/1.7f, mHeight/1.7f };
     //Render to screen
-    SDL_RenderCopyEx( renderer, mTexture, NULL, &renderQuad, rotation, NULL, SDL_FLIP_HORIZONTAL);
+    SDL_RenderCopyExF( renderer, mTexture, NULL, &planetQuad, rotation, NULL, SDL_FLIP_HORIZONTAL);
 
 }
 Planet::Planet()
@@ -33,38 +35,6 @@ Planet::~Planet()
 {
 	//Deallocate
 	free();
-}
-bool Planet::loadFromFile( std::string path,SDL_Renderer* renderer)
-{
-	free();
-	SDL_Texture* newTexture = NULL;
-	SDL_Surface* loadedSurface = IMG_Load( path.c_str() );
-	if( loadedSurface == NULL )
-	{
-		printf( "Unable to load image %s! SDL_image Error: %s\n", path.c_str(), IMG_GetError() );
-	}
-	else
-	{
-		//Color key image
-		SDL_SetColorKey( loadedSurface, SDL_TRUE, SDL_MapRGB( loadedSurface->format, 0, 0xFF, 0xFF ) );
-		//Create texture from surface pixels
-        newTexture = SDL_CreateTextureFromSurface( renderer, loadedSurface );
-		if( newTexture == NULL )
-		{
-			printf( "Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError() );
-		}
-		else
-		{
-			//Get image dimensions
-			mWidth = loadedSurface->w/1.7f;
-			mHeight = loadedSurface->h/1.7f;
-		}
-		//Get rid of old loaded surface
-		SDL_FreeSurface( loadedSurface );
-	}
-	//Return success
-	mTexture = newTexture;
-	return mTexture != NULL;
 }
 
 void Planet::free()
@@ -85,13 +55,11 @@ void Planet::SetRotation(double value)
     if(rotation > 360) rotation -= 360;
     if(rotation < 0) rotation += 360;
 }
+
 //NODE
-Node::Node()
+void Node::Restart()
 {
-    srand(time(NULL));
     rotation = rand() % (360 + 1);
-    x = 400 + sin(rotation*Pi/180)*140;
-    y = 400 + cos(rotation*Pi/180)*140;
 }
 Node::~Node()
 {
@@ -115,41 +83,18 @@ void Node::render(SDL_Renderer* renderer)
     x = 400 + sin(rotation*Pi/180)*140-29;
     y = 400 - cos(rotation*Pi/180)*140-29;
     //mTexture = loadTexture("images/node.png",renderer);
-    SDL_FRect renderQuad = { x, y, mWidth, mHeight };
+    renderQuad = { x, y, mWidth/1.0f, mHeight/1.0f };
     //Render to screen
     //SDL_RenderCopyEx( renderer, mTexture, NULL, &renderQuad, rotation, NULL, SDL_FLIP_HORIZONTAL);
     SDL_RenderCopyF(renderer,mTexture,NULL,&renderQuad);
 }
-bool Node::loadFromFile( std::string path,SDL_Renderer* renderer)
-{
-	free();
-	SDL_Texture* newTexture = NULL;
-	SDL_Surface* loadedSurface = IMG_Load( path.c_str() );
-	if( loadedSurface == NULL )
-	{
-		printf( "Unable to load image %s! SDL_image Error: %s\n", path.c_str(), IMG_GetError() );
-	}
-	else
-	{
-		//Color key image
-		SDL_SetColorKey( loadedSurface, SDL_TRUE, SDL_MapRGB( loadedSurface->format, 0, 0xFF, 0xFF ) );
-		//Create texture from surface pixels
-        newTexture = SDL_CreateTextureFromSurface( renderer, loadedSurface );
-		if( newTexture == NULL )
-		{
-			printf( "Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError() );
-		}
-		else
-		{
-			//Get image dimensions
-			mWidth = loadedSurface->w/1.0f;
-			mHeight = loadedSurface->h/1.0f;
-		}
-		//Get rid of old loaded surface
-		SDL_FreeSurface( loadedSurface );
-	}
-	//Return success
-	mTexture = newTexture;
-	return mTexture != NULL;
-}
-
+//CHECK COLLISION
+//bool Planet::CheckCollision(Ship nova)
+//{
+//    if(CheckCollision(nodeQuad,Bullets[i].bulletQuad))
+//        {
+//            Bullets.erase(Bullets.begin() + i);
+//            score++;
+//            cout << score << endl;
+//        }
+//}

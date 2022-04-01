@@ -12,19 +12,22 @@ using namespace std;
 class   Node
 {
     public:
-        Node();
+        //Node();
 
         ~Node();
 
         void free();
-        bool loadFromFile( std::string path,SDL_Renderer* renderer);
         void render(SDL_Renderer* renderer=NULL);
-        float rotation;
         float x,y;
-    private:
+        float rotation;
         SDL_Texture* mTexture;
-        int mWidth;
-        int mHeight;
+        float mWidth;
+        float mHeight;
+        //Restart the node
+        void Restart();
+        //Collision Box
+        SDL_FRect renderQuad;
+
 };
 class   Planet
 {
@@ -42,8 +45,6 @@ class   Planet
         //Deallocates memory
         ~Planet();
 
-        //Loads image at specified path
-        bool loadFromFile( std::string path,SDL_Renderer* renderer);
         //Deallocates texture
         void free();
 
@@ -53,7 +54,9 @@ class   Planet
         //The actual hardware texture
         SDL_Texture* mTexture;
         //Image dimensions
-        int mWidth;
-        int mHeight;
+        float mWidth;
+        float mHeight;
+        //Collision Box
+        SDL_FRect planetQuad;
 };
 #endif // PLANET_H
