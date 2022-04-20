@@ -31,8 +31,8 @@ void Bullet::Move()
 }
 void Ship::renderBullet(SDL_Renderer* renderer, int& i, float& degreee)
 {
-    SDL_FRect renderQuad = { Bullets[i].pos.f, Bullets[i].pos.s, BulletWidth/5.0f, BulletHeight/5.0f };
-    Bullets[i].bulletQuad = { Bullets[i].pos.f, Bullets[i].pos.s, BulletWidth/5.0f, BulletHeight/5.0f };
+    SDL_FRect renderQuad = { Bullets[i].pos.f, Bullets[i].pos.s, BulletWidth/8.0f, BulletHeight/8.0f };
+    Bullets[i].bulletQuad = { Bullets[i].pos.f, Bullets[i].pos.s, BulletWidth/8.0f, BulletHeight/8.0f };
     //Render to screen
     SDL_RenderCopyExF( renderer, BulletTexture, NULL, &renderQuad,degreee, NULL, SDL_FLIP_HORIZONTAL);
 }
@@ -50,17 +50,20 @@ void Ship::freeBullet()
 //SHIP
 Ship::Ship()
 {
-    pos.f = 400 + sin(rotation*Pi/180)*300-60;
-    pos.s = 400 - cos(rotation*Pi/180)*300-60;
+    pos.f = 400 + sin(rotation*Pi/180)*radius-60;
+    pos.s = 400 - cos(rotation*Pi/180)*radius-60;
 }
 void Ship::Move(int i)
 {
-    rotation += i;
+    if(i == -1 || i == 1) rotation += i;
+    if(radius > 220 && i == -2) radius += i;
+    else if(i == 2) radius += i;
+
 }
 void Ship::Shoot()
 {
-    pos.f = 400 + sin(rotation*Pi/180)*360-57.647;
-    pos.s = 400 - cos(rotation*Pi/180)*360-59.4117;
+    pos.f = 400 + sin(rotation*Pi/180)*radius-57.647;
+    pos.s = 400 - cos(rotation*Pi/180)*radius-59.4117;
     Bullet fire(pos);
     Bullets.push_back(fire);
     Bullets[Bullets.size()-1].degree = rotation;
@@ -69,29 +72,29 @@ void Ship::Shoot()
 void Ship::render(SDL_Renderer* renderer,SDL_FRect nodeQuad,SDL_FRect planetQuad)
 {
     if(rotation < 0) {rotation += 360;}
-    pos.f = 400 + sin(rotation*Pi/180)*360-57.647;
-    pos.s = 400 - cos(rotation*Pi/180)*360-59.4117;
+    pos.f = 400 + sin(rotation*Pi/180)*radius-57.647;
+    pos.s = 400 - cos(rotation*Pi/180)*radius-59.4117;
     //mTexture = loadTexture("images/node.png",renderer);
     shipQuad = { pos.f, pos.s, shipWidth/1.7f, shipHeight/1.7f };
     //Render to screen
-    SDL_RenderCopyExF( renderer, shipTexture, NULL, &shipQuad, rotation, NULL, SDL_FLIP_HORIZONTAL);
-    //cout << sqrt((pos.f - 400)*(pos.f - 400) + (pos.s - 400)*(pos.s - 400)) << endl;
-    for(int i = 0; i < Bullets.size(); i++)
-    {
-        if((Bullets[i].pos.f > 800 || Bullets[i].pos.f < 0) && (Bullets[i].pos.s < 0 || Bullets[i].pos.s > 800))
+        SDL_RenderCopyExF( renderer, shipTexture, NULL, &shipQuad, rotation, NULL, SDL_FLIP_HORIZONTAL);
+
+        for(int i = 0; i < Bullets.size(); i++)
         {
-            Bullets.erase(Bullets.begin() + i);
+            if((Bullets[i].pos.f > 800 || Bullets[i].pos.f < 0) && (Bullets[i].pos.s < 0 || Bullets[i].pos.s > 800))
+            {
+                Bullets.erase(Bullets.begin() + i);
+            }
+            if(CheckCollision(Bullets[i].bulletQuad,nodeQuad))
+            {
+                score++;
+                cout << score << endl;
+                Bullets.erase(Bullets.begin() + i);
+            }
+            else if(CheckCollision(Bullets[i].bulletQuad,planetQuad)) Bullets.erase(Bullets.begin() + i);
+            Bullets[i].Move();
+            renderBullet(renderer,i,Bullets[i].degree);
         }
-        if(CheckCollision(Bullets[i].bulletQuad,nodeQuad))
-        {
-            score++;
-            cout << score << endl;
-            Bullets.erase(Bullets.begin() + i);
-        }
-        else if(CheckCollision(Bullets[i].bulletQuad,planetQuad)) Bullets.erase(Bullets.begin() + i);
-        Bullets[i].Move();
-        renderBullet(renderer,i,Bullets[i].degree);
-    }
 }
 Ship::~Ship()
 {

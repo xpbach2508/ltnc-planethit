@@ -34,9 +34,11 @@ class   Planet
     public:
         //Rotation
         float rotation;
-        void SetRotation(double value);
+        void SetRotation(Uint32 value);
+        Uint32 lastChange = -1;
+        int clockwise = 1;
         //Speed
-        float speed = 1;
+        float speed = 0.5;
         //Node in planet
         Node node;
         //Initializes variables

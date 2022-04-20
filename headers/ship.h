@@ -39,6 +39,7 @@ public:
     SDL_Texture* shipTexture;
     float shipHeight,shipWidth;
     void Move(int i);
+    double radius = 300;
     //Bullets
     SDL_Texture* BulletTexture;
     float BulletWidth,BulletHeight;

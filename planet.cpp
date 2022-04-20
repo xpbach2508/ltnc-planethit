@@ -48,10 +48,11 @@ void Planet::free()
 		mHeight = 0;
 	}
 }
-void Planet::SetRotation(double value)
+void Planet::SetRotation(Uint32 value)
 {
-    rotation += value * speed;
-    node.rotation += value * speed;
+    if(value%1000 > 900 && lastChange + 10000 < value) clockwise = - clockwise,lastChange = value;
+    rotation += clockwise * speed;
+    node.rotation += clockwise * speed;
     if(rotation > 360) rotation -= 360;
     if(rotation < 0) rotation += 360;
 }
@@ -88,13 +89,3 @@ void Node::render(SDL_Renderer* renderer)
     //SDL_RenderCopyEx( renderer, mTexture, NULL, &renderQuad, rotation, NULL, SDL_FLIP_HORIZONTAL);
     SDL_RenderCopyF(renderer,mTexture,NULL,&renderQuad);
 }
-//CHECK COLLISION
-//bool Planet::CheckCollision(Ship nova)
-//{
-//    if(CheckCollision(nodeQuad,Bullets[i].bulletQuad))
-//        {
-//            Bullets.erase(Bullets.begin() + i);
-//            score++;
-//            cout << score << endl;
-//        }
-//}
