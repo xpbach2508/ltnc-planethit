@@ -20,7 +20,7 @@ class Bullet
     pff dir;
     float speed = 0.03f;
     float degree;
-    Bullet(pff pos);
+    Bullet(pff pos, float BulletW, float BulletH);
     void Move();
     //void render();
     SDL_FRect bulletQuad;

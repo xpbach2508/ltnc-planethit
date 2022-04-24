@@ -2,16 +2,9 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include "headers/asteroids.h"
+#include "headers/SDL_ultils.h"
 
 using namespace std;
-
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 800;
-const string WINDOW_TITLE = "Let's go";
-
-
-//spawnAster
-
 
 //CheckCollision
 bool CheckCollision(SDL_FRect& a, SDL_FRect& b)

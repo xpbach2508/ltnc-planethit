@@ -12,17 +12,14 @@ using namespace std;
 class   Node
 {
     public:
-        //Node();
-
         ~Node();
-
         void free();
         void render(SDL_Renderer* renderer=NULL);
         float x,y;
         float rotation;
-        SDL_Texture* mTexture;
-        float mWidth;
-        float mHeight;
+        SDL_Texture* Texture;
+        float Width;
+        float Height;
         //Restart the node
         void Restart();
         //Collision Box
@@ -54,10 +51,10 @@ class   Planet
         void render(SDL_Renderer* renderer=NULL);
 
         //The actual hardware texture
-        SDL_Texture* mTexture;
+        SDL_Texture* Texture;
         //Image dimensions
-        float mWidth;
-        float mHeight;
+        float Width;
+        float Height;
         //Collision Box
         SDL_FRect planetQuad;
 };

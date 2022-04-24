@@ -38,9 +38,11 @@
 		<Unit filename="headers/asteroids.h" />
 		<Unit filename="headers/planet.h" />
 		<Unit filename="headers/ship.h" />
+		<Unit filename="headers/ui.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="planet.cpp" />
 		<Unit filename="ship.cpp" />
+		<Unit filename="ui.cpp" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>
