@@ -1,10 +1,67 @@
-#include <iostream>
-#include <SDL.h>
-#include <SDL_image.h>
-#include "headers/asteroids.h"
 #include "headers/SDL_ultils.h"
 
-using namespace std;
+void Game_Over()
+{
+
+}
+
+void RenderNumber(SDL_Renderer* renderer, SDL_Texture* texture, int kind, const int & score)
+{
+    SDL_Rect num[10];
+    for (int i = 0; i < 10; ++i)
+        num[i] = {i * 20, 0, 20, 20};
+    string _highscore = GetHighScoreFromFile("high_score.txt");
+    string _score = to_string(score);
+    if(kind == 2) {
+        for (int i = 0; i < _score.length(); ++i)
+        {
+            SDL_Rect dRect = {SCORE_GAMEPX+ i*20, SCORE_GAMEPY, 20, 20};
+            SDL_RenderCopy(renderer, texture, &num[_score[i]-'0'],&dRect);
+        }
+        for(int i = 0; i < _highscore.length(); ++i)
+        {
+            SDL_Rect dRect = {HIGH_SCORE_GAMEPX+ i*20, HIGH_SCORE_GAMEPY, 20, 20};
+            SDL_RenderCopy(renderer, texture, &num[_highscore[i]-'0'],&dRect);
+        }
+    }
+    if(kind == 1) {
+        int start = HIGH_SCORE_MENUPX - _highscore.length()/2*20;
+        for(int i = 0; i < _highscore.length(); i++)
+        {
+            SDL_Rect dRect = {start+ i*20, HIGH_SCORE_MENUPY,20 ,20};
+            SDL_RenderCopy(renderer, texture, &num[_highscore[i]-'0'],&dRect);
+        }
+    }
+}
+//highscore
+std::string GetHighScoreFromFile(std::string path)
+{
+	std::fstream HighScoreFile;
+	std::string highscore;
+
+	HighScoreFile.open(path, std::ios::in);
+	HighScoreFile >> highscore;
+
+	return highscore;
+}
+void UpdateHighScore(std::string path, const int& score, const std::string& old_high_score)
+{
+	int oldHighScore = 0;
+	std::fstream HighScoreFile;
+	std::string newHighScore;
+	std::stringstream ConvertToInt(old_high_score);
+
+	HighScoreFile.open(path, std::ios::out);
+
+	ConvertToInt >> oldHighScore;
+	if (score > oldHighScore)
+	{
+		oldHighScore = score;
+	}
+	newHighScore = std::to_string(oldHighScore);
+
+	HighScoreFile << newHighScore;
+}
 
 //CheckCollision
 bool CheckCollision(SDL_FRect& a, SDL_FRect& b)
@@ -61,21 +118,21 @@ void logSDLError(std::ostream& os,
     }
 }
 
-SDL_Texture* loadTexture(string path, SDL_Renderer* renderer, float& Width, float& Height)
+SDL_Texture* loadTexture(std::string path, SDL_Renderer* renderer)
 {
     SDL_Texture* newTexture = nullptr;
     SDL_Surface* loadedSurface = IMG_Load( path.c_str());
     if( loadedSurface == nullptr)
-        cout << "Unable to load image " << path << " SDL_image Error: "
-             << IMG_GetError() << endl;
+        std::cout << "Unable to load image " << path << " SDL_image Error: "
+             << IMG_GetError() << std::endl;
     else {
         newTexture = SDL_CreateTextureFromSurface( renderer, loadedSurface);
-        if( newTexture == nullptr) cout << "Unable to create texture from " << path << "SDL Error:"
-                                << SDL_GetError() << endl;
-        else {
-            Width = loadedSurface->w;
-            Height = loadedSurface->h;
-        }
+        if( newTexture == nullptr) std::cout << "Unable to create texture from " << path << "SDL Error:"
+                                << SDL_GetError() << std::endl;
+//        else {
+//            Width = loadedSurface->w;
+//            Height = loadedSurface->h;
+//        }
         SDL_FreeSurface(loadedSurface);
     }
     return newTexture;

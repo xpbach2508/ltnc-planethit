@@ -1,19 +1,4 @@
-#include <iostream>
-#include <time.h>
-#include <stdlib.h>
-#include <vector>
-#include <stdio.h>
-#include <SDL.h>
-#include <SDL_image.h>
-#include <cmath>
-
 #include "headers/ship.h"
-#include "headers/planet.h"
-#include "headers/SDL_ultils.h"
-
-#define Pi 3.14159265
-#define f first
-#define s second
 
 using namespace std;
 
@@ -52,6 +37,7 @@ Ship::Ship()
 {
     pos.f = SCREEN_WIDTH/2 + sin(rotation*Pi/180)*radius-shipWidth/2;
     pos.s = SCREEN_HEIGHT/2 - cos(rotation*Pi/180)*radius-shipHeight/2;
+    health = 5;
 }
 void Ship::Move(int i)
 {
@@ -72,6 +58,10 @@ void Ship::Shoot()
 
 void Ship::render(SDL_Renderer* renderer,SDL_FRect nodeQuad,SDL_FRect planetQuad)
 {
+    for(int i = 0; i < health; i++) {
+        SDL_Rect dRect = {HEALTH_POSX+30*(5-i),HEALTH_POSY,30,30};
+        SDL_RenderCopy(renderer,shipHealthTexture,NULL,&dRect);
+    }
     if(rotation < 0) {rotation += 360;}
     pos.f = SCREEN_WIDTH/2 + sin(rotation*Pi/180)*radius-shipWidth/2;
     pos.s = SCREEN_HEIGHT/2 - cos(rotation*Pi/180)*radius-shipHeight/2;

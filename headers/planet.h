@@ -7,6 +7,9 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <cmath>
+#include "SDL_ultils.h"
+
+#define Pi 3.14159265
 
 using namespace std;
 class   Node
@@ -29,6 +32,8 @@ class   Node
 class   Planet
 {
     public:
+        //health
+        int health;
         //Rotation
         float rotation;
         void SetRotation(Uint32 value);

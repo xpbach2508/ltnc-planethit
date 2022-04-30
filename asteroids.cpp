@@ -49,7 +49,7 @@ asteroid::asteroid()
 }
 void asteroid::render(SDL_Renderer* renderer,SDL_Texture* asterTexture, float asterWidth, float asterHeight)
 {
-    asterQuad = { pos.f, pos.s , asterWidth/25.0f, asterWidth/25.0f };
+    asterQuad = { pos.f, pos.s , asterWidth, asterWidth };
     //Render to screen
     SDL_RenderCopyExF( renderer, asterTexture, NULL, &asterQuad, rotation, NULL, SDL_FLIP_HORIZONTAL);
 }

@@ -1,6 +1,3 @@
-#include <iostream>
-#include <SDL.h>
-#include <SDL_image.h>
 #include "headers/ui.h"
 using namespace std;
 

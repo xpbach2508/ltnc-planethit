@@ -1,15 +1,20 @@
 #ifndef SHIP_H
 #define SHIP_H
 #include <iostream>
-#include <vector>
 #include <time.h>
 #include <stdlib.h>
+#include <vector>
 #include <stdio.h>
 #include <SDL.h>
 #include <SDL_image.h>
 #include <cmath>
 
+#include "planet.h"
+#include "SDL_ultils.h"
 
+#define Pi 3.14159265
+#define f first
+#define s second
 #define pff pair<float,float>
 
 using namespace std;
@@ -40,6 +45,8 @@ public:
     float shipHeight,shipWidth;
     void Move(int i);
     double radius = 300;
+    int health;
+    SDL_Texture* shipHealthTexture;
     //Bullets
     SDL_Texture* BulletTexture;
     float BulletWidth,BulletHeight;

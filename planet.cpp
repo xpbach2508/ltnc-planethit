@@ -1,21 +1,12 @@
-#include <iostream>
-#include <time.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <SDL.h>
-#include <SDL_image.h>
-#include <cmath>
 #include "headers/planet.h"
-#include "headers/SDL_ultils.h"
 
-#define Pi 3.14159265
 
 using namespace std;
 //PLANET
 void Planet::render(SDL_Renderer* renderer)
 {
     node.render(renderer);
-    planetQuad = { (SCREEN_WIDTH - Width*5.83f)/2, (SCREEN_HEIGHT-Height*5.83f)/2 , Width*5.83f, Height*5.83f };
+    planetQuad = { (SCREEN_WIDTH - Width)/2, (SCREEN_HEIGHT-Height)/2 , Width, Height };
     //Render to screen
     SDL_RenderCopyExF( renderer, Texture, NULL, &planetQuad, rotation, NULL, SDL_FLIP_HORIZONTAL);
 
@@ -26,6 +17,7 @@ Planet::Planet()
 	Texture = NULL;
 	Width = 0;
 	Height = 0;
+	health = 5;
 }
 
 Planet::~Planet()
@@ -83,6 +75,6 @@ void Node::render(SDL_Renderer* renderer)
     //mTexture = loadTexture("images/node.png",renderer);
     renderQuad = { x, y, Width, Height };
     //Render to screen
-    //SDL_RenderCopyEx( renderer, mTexture, NULL, &renderQuad, rotation, NULL, SDL_FLIP_HORIZONTAL);
-    SDL_RenderCopyF(renderer,Texture,NULL,&renderQuad);
+    SDL_RenderCopyExF( renderer, Texture, NULL, &renderQuad, rotation, NULL, SDL_FLIP_HORIZONTAL);
+    //SDL_RenderCopyF(renderer,Texture,NULL,&renderQuad);
 }
