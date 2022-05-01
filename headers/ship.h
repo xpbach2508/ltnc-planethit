@@ -1,18 +1,10 @@
 #ifndef SHIP_H
 #define SHIP_H
-#include <iostream>
-#include <time.h>
-#include <stdlib.h>
 #include <vector>
-#include <stdio.h>
-#include <SDL.h>
-#include <SDL_image.h>
-#include <cmath>
 
 #include "planet.h"
 #include "SDL_ultils.h"
 
-#define Pi 3.14159265
 #define f first
 #define s second
 #define pff pair<float,float>
@@ -35,7 +27,7 @@ class Ship
 public:
     Ship();
     ~Ship();
-    void render(SDL_Renderer* renderer = NULL,SDL_FRect nodeQuad = {},SDL_FRect planetQuad = {});
+    void render(SDL_Renderer* renderer = NULL,SDL_FRect nodeQuad = {},SDL_FRect planetQuad = {},Mix_Chunk* shot = NULL,Mix_Chunk* collide=NULL);
     void free();
 
     //Ship Charateristics

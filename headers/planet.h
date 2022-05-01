@@ -4,9 +4,10 @@
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <cmath>
 #include <SDL.h>
 #include <SDL_image.h>
-#include <cmath>
+
 #include "SDL_ultils.h"
 
 #define Pi 3.14159265

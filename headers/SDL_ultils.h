@@ -5,6 +5,7 @@
 #include <string>
 #include <fstream>
 #include "asteroids.h"
+#include <SDL_mixer.h>
 
 #define MAIN_BUTTON 1
 #define GAME_BUTTON 2
@@ -28,11 +29,13 @@ const int SCREEN_HEIGHT = 800;
 const std::string WINDOW_TITLE = "Planet Hit";
 
 const int TITLE_WIDTH = 800;
-const int TITLE_HEIGHT = 437;
+const int TITLE_HEIGHT = 496;
 const int MAIN_BUTTON_WIDTH = 248;
 const int MAIN_BUTTON_HEIGHT = 90;
 const int HIGH_SCORE_MENU_WIDTH = 0;
 const int HIGH_SCORE_MENU_HEIGHT = 0;
+const int OVER_WIDTH =  684;
+const int OVER_HEIGHT = 137;
 
 const int TITLE_POSX = 0;
 const int TITLE_POSY = 0;
@@ -43,16 +46,20 @@ const int EXIT_BUTTON_POSY = 591;
 const int HIGH_SCORE_MENUPX = 130;
 const int HIGH_SCORE_MENUPY = 429;
 const int HIGH_SCORE_TEXTPX = 0;
-const int HIGH_SCORE_TEXTPY = 0;
-const int HIGH_SCORE_GAMEPX = 0;
-const int HIGH_SCORE_GAMEPY = 0;
-const int SCORE_GAMEPX = 0;
-const int SCORE_GAMEPY = 20;
+const int HIGH_SCORE_TEXTPY = 7;
+const int HIGH_SCORE_GAMEPX = 165;
+const int HIGH_SCORE_GAMEPY = 5;
+const int SCORE_GAMEPX = 91;
+const int SCORE_GAMEPY = 32;
 const int HEALTH_POSX = 650;
 const int HEALTH_POSY = 0;
+const int OVER_POSX = 57;
+const int OVER_POSY = 612;
 
 
 void Game_Over();
+
+void renderHealth(SDL_Renderer* renderer, SDL_Texture* texture, int& health);
 
 void RenderNumber(SDL_Renderer* renderer, SDL_Texture* texture, int kind, const int & score);
 

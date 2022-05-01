@@ -37,7 +37,7 @@ Ship::Ship()
 {
     pos.f = SCREEN_WIDTH/2 + sin(rotation*Pi/180)*radius-shipWidth/2;
     pos.s = SCREEN_HEIGHT/2 - cos(rotation*Pi/180)*radius-shipHeight/2;
-    health = 5;
+    health = 2;
 }
 void Ship::Move(int i)
 {
@@ -56,12 +56,8 @@ void Ship::Shoot()
     Bullets[Bullets.size()-1].degree = rotation;
 }
 
-void Ship::render(SDL_Renderer* renderer,SDL_FRect nodeQuad,SDL_FRect planetQuad)
+void Ship::render(SDL_Renderer* renderer,SDL_FRect nodeQuad,SDL_FRect planetQuad,Mix_Chunk* shot,Mix_Chunk* collide)
 {
-    for(int i = 0; i < health; i++) {
-        SDL_Rect dRect = {HEALTH_POSX+30*(5-i),HEALTH_POSY,30,30};
-        SDL_RenderCopy(renderer,shipHealthTexture,NULL,&dRect);
-    }
     if(rotation < 0) {rotation += 360;}
     pos.f = SCREEN_WIDTH/2 + sin(rotation*Pi/180)*radius-shipWidth/2;
     pos.s = SCREEN_HEIGHT/2 - cos(rotation*Pi/180)*radius-shipHeight/2;
@@ -76,10 +72,15 @@ void Ship::render(SDL_Renderer* renderer,SDL_FRect nodeQuad,SDL_FRect planetQuad
         if(CheckCollision(Bullets[i].bulletQuad,nodeQuad))
         {
             score++;
-            cout << score << endl;
+            //cout << score << endl;
             Bullets.erase(Bullets.begin() + i);
+            Mix_PlayChannel(-1,collide,0);
         }
-        else if(CheckCollision(Bullets[i].bulletQuad,planetQuad)) Bullets.erase(Bullets.begin() + i),cout << Bullets[i].pos.f << " " << Bullets[i].pos.s << endl;
+        else if(CheckCollision(Bullets[i].bulletQuad,planetQuad)) {
+                Bullets.erase(Bullets.begin() + i);
+                cout << Bullets[i].pos.f << " " << Bullets[i].pos.s << endl;
+                Mix_PlayChannel(-1,collide,0);
+        }
         Bullets[i].Move();
         renderBullet(renderer,i,Bullets[i].degree);
     }

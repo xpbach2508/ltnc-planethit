@@ -3,9 +3,10 @@
 #include <vector>
 #include <stdlib.h>
 #include <stdio.h>
+#include <cmath>
 #include <SDL.h>
 #include <SDL_image.h>
-#include <cmath>
+#include <SDL_mixer.h>
 
 
 #include "headers/planet.h"
@@ -29,11 +30,32 @@ int main(int argc, char* argv[])
     initSDL(window, renderer);
 
     //Initialize things
-        //Game
+    //Game
     Planet Earth;
     Ship Nova;
     vector<asteroid> asteroids;
     sizeAsset aster, sHealth;
+    //Sounds
+    Mix_Music* gameMusic = nullptr;
+    Mix_Music* menuMusic = nullptr;
+    Mix_Chunk* Click = nullptr;
+    Mix_Chunk* Shoot = nullptr;
+    Mix_Chunk* Over = nullptr;
+    Mix_Chunk* get_hit = nullptr;
+    Mix_Chunk* Start = nullptr;
+    Mix_Chunk* point = nullptr;
+    Mix_Chunk* bulletExplode = nullptr;
+
+    gameMusic = Mix_LoadMUS("sounds/background_game.wav");
+    menuMusic = Mix_LoadMUS("sounds/background_menu.wav");
+    Click = Mix_LoadWAV("sounds/click.wav");
+    Shoot = Mix_LoadWAV("sounds/shoot.wav");
+    Over = Mix_LoadWAV("sounds/game_over.wav");
+    if(Over==nullptr) cout << "error";
+    get_hit = Mix_LoadWAV("sounds/get_hit.wav");
+    Start = Mix_LoadWAV("sounds/start.wav");
+    point = Mix_LoadWAV("sounds/point.wav");
+    bulletExplode = Mix_LoadWAV("sounds/explode.wav");
 
     Earth.node.Texture = loadTexture("images/node.png",renderer);
     Earth.Texture = loadTexture("images/earth.png",renderer);
@@ -63,7 +85,10 @@ int main(int argc, char* argv[])
     SDL_Texture* ButtonTexture = loadTexture("images/Button.png",renderer);
     SDL_Texture* titleTexture = loadTexture("images/title.png",renderer);
     SDL_Texture* number = loadTexture("images/Number.png",renderer);
+    SDL_Texture* gOver = loadTexture("images/game_over.png",renderer);
+    SDL_Texture* score_gameTexture = loadTexture("images/score_game.png",renderer);
 
+    SDL_Rect score_game = {HIGH_SCORE_TEXTPX,HIGH_SCORE_TEXTPY,161,45};
     SDL_Rect rendertitleRect = {TITLE_POSX,TITLE_POSY,TITLE_WIDTH,TITLE_HEIGHT};
     SDL_Rect renderbgRect = {0,0,SCREEN_WIDTH,SCREEN_HEIGHT};
     SDL_Rect RectPlayButton[BUTTON_MOUSE_TOTAL];
@@ -74,13 +99,13 @@ int main(int argc, char* argv[])
     exitButton.setRect(RectExitButton,1);
 
     //Game manager
-    bool quit = false;
-    int lastscore = 0, playagain = 0;
+    bool quit = false,playagain = false, gameover = false;
+    int lastscore = 0;
     Uint32 speedTimer = 0;
     Uint32 lastShootTime = SDL_GetTicks();
     Uint32 lastspawnAster = lastShootTime;
     SDL_Event e;
-
+    Mix_PlayMusic(menuMusic,-1);
         while(!quit)
         {
             SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0xFF, 0xFF );
@@ -99,8 +124,17 @@ int main(int argc, char* argv[])
                         else playButton.currentSprite = BUTTON_MOUSE_OUT;
                         if(exitButton.handleEventInside(&e,0)) exitButton.currentSprite = BUTTON_MOUSE_OVER;
                         else exitButton.currentSprite = BUTTON_MOUSE_OUT;
-                        if(playButton.handleEventInside(&e,0)&&e.type == SDL_MOUSEBUTTONDOWN) display = game;
-                        if(exitButton.handleEventInside(&e,0)&&e.type == SDL_MOUSEBUTTONDOWN) quit = true;
+                        if(playButton.handleEventInside(&e,0)&&e.type == SDL_MOUSEBUTTONDOWN) {
+                            playagain = 1;
+                            display = game;
+                            Mix_PlayChannel(-1,Click,0);
+                            Mix_HaltMusic();
+                            Mix_PlayMusic(gameMusic,-1);
+                        }
+                        if(exitButton.handleEventInside(&e,0)&&e.type == SDL_MOUSEBUTTONDOWN) {
+                                quit = true;
+                                Mix_PlayChannel(-1,Click,0);
+                        }
 
                     }
                     RenderNumber(renderer, number, 1, Nova.score);
@@ -110,16 +144,35 @@ int main(int argc, char* argv[])
                     speedTimer = SDL_GetTicks();
                     break;
             case game:
+                    if(gameover) {
+                        while(!quit) {
+                            while(SDL_PollEvent(&e)!=0) if(e.type==SDL_QUIT) quit = true;
+                            const Uint8 *states = SDL_GetKeyboardState(NULL);
+                            if(states[SDL_SCANCODE_ESCAPE]){
+                            display = menu;
+                            Mix_HaltMusic();
+                            Mix_PlayMusic(menuMusic,-1);
+                            break;
+                            }
+                            else if(states[SDL_SCANCODE_RETURN]) {
+                            playagain = 1;
+                            break;
+                            }
+                        }
+                        UpdateHighScore("high_score.txt",Nova.score,highscore);
+                        gameover = 0;
+                    }
                     if(playagain) {
                         lastscore = 0;
                         Nova.score = 0;
-                        Nova.health = 5;
+                        Nova.health = 2;
                         Nova.rotation = rand()%361;
                         speedTimer = 0;
                         Earth.speed = 0.5;
                         playagain = 0;
                         asteroids.clear();
                         Nova.radius = 290;
+                        Mix_PlayChannel(-1,Start,0);
                     }
                     SDL_RenderCopy(renderer,backgroundGame,&renderbgRect,NULL);
                     while(SDL_PollEvent(&e)!=0) if(e.type==SDL_QUIT) quit = true;
@@ -144,10 +197,13 @@ int main(int argc, char* argv[])
                         {
                             Nova.Shoot();
                             lastShootTime = SDL_GetTicks();
+                            Mix_PlayChannel(-1,Shoot,0);
                         }
                     else if(states[SDL_SCANCODE_ESCAPE])
                         {
                             display = menu;
+                            Mix_HaltMusic();
+                            Mix_PlayMusic(menuMusic,-1);
                         }
                     else ;
                 //asteroid
@@ -173,6 +229,7 @@ int main(int argc, char* argv[])
                         {
                             asteroids.erase(asteroids.begin()+i);
                             Nova.health--;
+                            Mix_PlayChannel(-1,get_hit,0);
                         }
 
                         if((asteroids[i].pos.f > 800 || asteroids[i].pos.f < 0) && (asteroids[i].pos.s < 0 || asteroids[i].pos.s > 800))
@@ -180,34 +237,47 @@ int main(int argc, char* argv[])
                             asteroids.erase(asteroids.begin() + i);
                         }
                     }
-                if(Nova.health <= 0) {
-                        while(!quit) {
-                            while(SDL_PollEvent(&e)!=0) if(e.type==SDL_QUIT) quit = true;
-                            const Uint8 *states = SDL_GetKeyboardState(NULL);
-                            if(states[SDL_SCANCODE_ESCAPE])
-                            {
-                            display = menu;
-                            break;
-                            }
-                            else if(states[SDL_SCANCODE_RETURN]) {
-                            playagain = 1;
-                            break;
-                            }
-                        }
-                        UpdateHighScore("high_score.txt",Nova.score,highscore);
-                }
-                else {
-                        Nova.render(renderer,Earth.node.renderQuad,Earth.planetQuad);
-                        RenderNumber(renderer,number,2,Nova.score);
-                }
+                SDL_RenderCopy(renderer, score_gameTexture, NULL, &score_game);
+                renderHealth(renderer,Nova.shipHealthTexture, Nova.health);
+                Nova.render(renderer,Earth.node.renderQuad,Earth.planetQuad,Shoot,bulletExplode);
+                RenderNumber(renderer,number,2,Nova.score);
                 Earth.SetRotation(speedTimer);
-                if(lastscore + 1 == Nova.score) Earth.node.Restart(),lastscore = Nova.score;
+                if(lastscore + 1 == Nova.score) {
+                        Earth.node.Restart(),lastscore = Nova.score;
+                        Mix_PlayChannel(-1,point,0);
+                }
                 if(speedTimer + 9000 < SDL_GetTicks()) Earth.speed+=0.1f,speedTimer = SDL_GetTicks();
                 Earth.render(renderer);
+                if(Nova.health == 0) {
+                    Mix_PauseMusic();
+                    Mix_PlayChannel(-1,Over,0);
+                    gameover = 1;
+                    Nova.health++;
+                    SDL_Rect dRect = {OVER_POSX,OVER_POSY,OVER_WIDTH,OVER_HEIGHT};
+                    SDL_RenderCopy(renderer,gOver,NULL,&dRect);
+                }
                 break;
         }
         SDL_RenderPresent( renderer );
         }
+    Mix_FreeMusic(gameMusic);
+    Mix_FreeMusic(menuMusic);
+    Mix_FreeChunk(Click);
+    Mix_FreeChunk(bulletExplode);
+    Mix_FreeChunk(Over);
+    Mix_FreeChunk(get_hit);
+    Mix_FreeChunk(point);
+    Mix_FreeChunk(Shoot);
+    Mix_FreeChunk(Start);
+     gameMusic = nullptr;
+     menuMusic = nullptr;
+     Click = nullptr;
+     Shoot = nullptr;
+     Over = nullptr;
+     get_hit = nullptr;
+     Start = nullptr;
+     point = nullptr;
+     bulletExplode = nullptr;
     quitSDL(window, renderer);
     return 0;
 }

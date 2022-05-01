@@ -4,6 +4,13 @@ void Game_Over()
 {
 
 }
+void renderHealth(SDL_Renderer* renderer, SDL_Texture* texture, int& health)
+{
+    for(int i = 0; i < health; i++) {
+        SDL_Rect dRect = {HEALTH_POSX+30*(1-i),HEALTH_POSY,30,30};
+        SDL_RenderCopy(renderer,texture,NULL,&dRect);
+    }
+}
 
 void RenderNumber(SDL_Renderer* renderer, SDL_Texture* texture, int kind, const int & score)
 {
@@ -117,7 +124,6 @@ void logSDLError(std::ostream& os,
         exit(1);
     }
 }
-
 SDL_Texture* loadTexture(std::string path, SDL_Renderer* renderer)
 {
     SDL_Texture* newTexture = nullptr;
@@ -141,7 +147,10 @@ void initSDL(SDL_Window* &window, SDL_Renderer* &renderer)
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
         logSDLError(std::cout, "SDL_Init", true);
-
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+    {
+        printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
+    }
     window = SDL_CreateWindow(WINDOW_TITLE.c_str(), SDL_WINDOWPOS_CENTERED,
        SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     //window = SDL_CreateWindow(WINDOW_TITLE.c_str(), SDL_WINDOWPOS_CENTERED,
@@ -160,7 +169,8 @@ void initSDL(SDL_Window* &window, SDL_Renderer* &renderer)
 }
 void quitSDL(SDL_Window* window, SDL_Renderer* renderer)
 {
-	SDL_DestroyRenderer(renderer);
+    Mix_Quit();
+    SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
 }
