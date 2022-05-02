@@ -14,14 +14,23 @@ Button::Button(int x, int y)
 
 	currentSprite = BUTTON_MOUSE_OUT;
 }
-void Button::setRect(SDL_Rect* re,int type)
+void Button::setRect(SDL_Rect* re,int type,int kind)
 {
+    int width,height;
+    if(kind == 1) {
+         width = MAIN_BUTTON_WIDTH;
+         height = MAIN_BUTTON_HEIGHT;
+    }
+    if(kind == 2) {
+        width = GAME_BUTTON_WIDTH;
+        height = GAME_BUTTON_HEIGHT;
+    }
     for(int i = 0; i < BUTTON_MOUSE_TOTAL; i++)
     {
-        re[i].x = MAIN_BUTTON_WIDTH*i;
-        re[i].y = MAIN_BUTTON_HEIGHT*type;
-        re[i].w = MAIN_BUTTON_WIDTH;
-        re[i].h = MAIN_BUTTON_HEIGHT;
+        re[i].x = width*i;
+        re[i].y = height*type;
+        re[i].w = width;
+        re[i].h = height;
     }
 }
 bool Button::handleEventInside(SDL_Event* e,int sizeB)
@@ -37,7 +46,10 @@ bool Button::handleEventInside(SDL_Event* e,int sizeB)
 			button_width = MAIN_BUTTON_WIDTH;
 			button_height = MAIN_BUTTON_HEIGHT;
 		}
-		else;
+		else if(sizeB == GAME_BUTTON) {
+            button_width = GAME_BUTTON_WIDTH;
+            button_height = GAME_BUTTON_HEIGHT;
+		}
         if(x < pPosition.x) inside = false;
         else if (x > pPosition.x + button_width) inside = false;
         else if (y < pPosition.y) inside = false;
@@ -46,9 +58,18 @@ bool Button::handleEventInside(SDL_Event* e,int sizeB)
     }
     return false;
 }
-void Button::render(SDL_Renderer* renderer, SDL_Rect* currentClip, SDL_Texture* texture)
+void Button::render(SDL_Renderer* renderer, SDL_Rect* currentClip, SDL_Texture* texture,int kind)
 {
-    SDL_Rect renderQuad = {pPosition.x,pPosition.y,MAIN_BUTTON_WIDTH,MAIN_BUTTON_HEIGHT};
+    int width,height;
+    if(kind == 1) {
+         width = MAIN_BUTTON_WIDTH;
+         height = MAIN_BUTTON_HEIGHT;
+    }
+    if(kind == 2) {
+        width = GAME_BUTTON_WIDTH;
+        height = GAME_BUTTON_HEIGHT;
+    }
+    SDL_Rect renderQuad = {pPosition.x, pPosition.y, width, height};
     SDL_RenderCopy(renderer, texture, currentClip, &renderQuad);
 }
 void Button::free(SDL_Texture* ButtonTexture)

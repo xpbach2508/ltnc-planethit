@@ -51,7 +51,6 @@ int main(int argc, char* argv[])
     Click = Mix_LoadWAV("sounds/click.wav");
     Shoot = Mix_LoadWAV("sounds/shoot.wav");
     Over = Mix_LoadWAV("sounds/game_over.wav");
-    if(Over==nullptr) cout << "error";
     get_hit = Mix_LoadWAV("sounds/get_hit.wav");
     Start = Mix_LoadWAV("sounds/start.wav");
     point = Mix_LoadWAV("sounds/point.wav");
@@ -83,23 +82,34 @@ int main(int argc, char* argv[])
     SDL_Texture* backgroundMenu = loadTexture("images/bgMenu.png",renderer);
     SDL_Texture* backgroundGame = loadTexture("images/backgroundGame.png",renderer);
     SDL_Texture* ButtonTexture = loadTexture("images/Button.png",renderer);
-    SDL_Texture* titleTexture = loadTexture("images/title.png",renderer);
     SDL_Texture* number = loadTexture("images/Number.png",renderer);
     SDL_Texture* gOver = loadTexture("images/game_over.png",renderer);
     SDL_Texture* score_gameTexture = loadTexture("images/score_game.png",renderer);
+    SDL_Texture* PauseTexture = loadTexture("images/pausebutton.png",renderer);
+    SDL_Texture* HelpTexture = loadTexture("images/help.png",renderer);
+    SDL_Texture* backTexture = loadTexture("images/backbutton.png",renderer);
 
     SDL_Rect score_game = {HIGH_SCORE_TEXTPX,HIGH_SCORE_TEXTPY,161,45};
-    SDL_Rect rendertitleRect = {TITLE_POSX,TITLE_POSY,TITLE_WIDTH,TITLE_HEIGHT};
     SDL_Rect renderbgRect = {0,0,SCREEN_WIDTH,SCREEN_HEIGHT};
     SDL_Rect RectPlayButton[BUTTON_MOUSE_TOTAL];
     SDL_Rect RectExitButton[BUTTON_MOUSE_TOTAL];
+    SDL_Rect RectHelpButton[BUTTON_MOUSE_TOTAL];
+    SDL_Rect RectPauseButton[BUTTON_MOUSE_TOTAL];
+    SDL_Rect RectBackButton[BUTTON_MOUSE_TOTAL];
+
     Button playButton(PLAY_BUTTON_POSX,PLAY_BUTTON_POSY);
     Button exitButton(EXIT_BUTTON_POSX,EXIT_BUTTON_POSY);
-    playButton.setRect(RectPlayButton,0);
-    exitButton.setRect(RectExitButton,1);
+    Button helpButton(HELP_BUTTON_POSX,HELP_BUTTON_POSY);
+    Button backButton(BACK_BUTTON_POSX,BACK_BUTTON_POSY);
+    Button pauseButton(PAUSE_BUTTON_POSX,PAUSE_BUTTON_POSY);
+    playButton.setRect(RectPlayButton,0,1);
+    exitButton.setRect(RectExitButton,1,1);
+    helpButton.setRect(RectHelpButton,2,1);
+    backButton.setRect(RectBackButton,0,2);
+    pauseButton.setRect(RectPauseButton,0,2);
 
     //Game manager
-    bool quit = false,playagain = false, gameover = false;
+    bool quit = false,playagain = false, gameover = false, pause = false;
     int lastscore = 0;
     Uint32 speedTimer = 0;
     Uint32 lastShootTime = SDL_GetTicks();
@@ -114,36 +124,46 @@ int main(int argc, char* argv[])
             switch (display)
             {
             case menu:
+                {
                     SDL_RenderCopy(renderer,backgroundMenu,NULL,NULL);
                     while(SDL_PollEvent(&e)!=0)
                     {
                         if(e.type==SDL_QUIT)    quit = true;
 
                         if(e.type==SDL_KEYDOWN&&e.key.keysym.sym==SDLK_ESCAPE) quit = true;
-                        if(playButton.handleEventInside(&e,0)) playButton.currentSprite = BUTTON_MOUSE_OVER;
+                        if(playButton.handleEventInside(&e,1)) playButton.currentSprite = BUTTON_MOUSE_OVER;
                         else playButton.currentSprite = BUTTON_MOUSE_OUT;
-                        if(exitButton.handleEventInside(&e,0)) exitButton.currentSprite = BUTTON_MOUSE_OVER;
+                        if(exitButton.handleEventInside(&e,1)) exitButton.currentSprite = BUTTON_MOUSE_OVER;
                         else exitButton.currentSprite = BUTTON_MOUSE_OUT;
-                        if(playButton.handleEventInside(&e,0)&&e.type == SDL_MOUSEBUTTONDOWN) {
+                        if(helpButton.handleEventInside(&e,1)) helpButton.currentSprite = BUTTON_MOUSE_OVER;
+                        else helpButton.currentSprite = BUTTON_MOUSE_OUT;
+                        if(playButton.handleEventInside(&e,1)&&e.type == SDL_MOUSEBUTTONDOWN) {
                             playagain = 1;
                             display = game;
                             Mix_PlayChannel(-1,Click,0);
                             Mix_HaltMusic();
                             Mix_PlayMusic(gameMusic,-1);
                         }
-                        if(exitButton.handleEventInside(&e,0)&&e.type == SDL_MOUSEBUTTONDOWN) {
-                                quit = true;
-                                Mix_PlayChannel(-1,Click,0);
+                        if(exitButton.handleEventInside(&e,1)&&e.type == SDL_MOUSEBUTTONDOWN) {
+                            quit = true;
+                            Mix_PlayChannel(-1,Click,0);
+                        }
+                        if(helpButton.handleEventInside(&e,1)&&e.type == SDL_MOUSEBUTTONDOWN) {
+                            display = helpscene;
+                            Mix_PlayChannel(-1,Click,0);
                         }
 
                     }
                     RenderNumber(renderer, number, 1, Nova.score);
-                    playButton.render(renderer, &RectPlayButton[playButton.currentSprite], ButtonTexture);
-                    exitButton.render(renderer, &RectExitButton[exitButton.currentSprite], ButtonTexture);
-                    SDL_RenderCopy(renderer,titleTexture,NULL,&rendertitleRect);
+                    playButton.render(renderer, &RectPlayButton[playButton.currentSprite], ButtonTexture,1);
+                    exitButton.render(renderer, &RectExitButton[exitButton.currentSprite], ButtonTexture,1);
+                    helpButton.render(renderer, &RectHelpButton[helpButton.currentSprite], ButtonTexture,1);
                     speedTimer = SDL_GetTicks();
                     break;
+                }
             case game:
+                {
+                    SDL_RenderCopy(renderer,backgroundGame,&renderbgRect,NULL);
                     if(gameover) {
                         while(!quit) {
                             while(SDL_PollEvent(&e)!=0) if(e.type==SDL_QUIT) quit = true;
@@ -155,6 +175,7 @@ int main(int argc, char* argv[])
                             break;
                             }
                             else if(states[SDL_SCANCODE_RETURN]) {
+                            Mix_PlayMusic(gameMusic,-1);
                             playagain = 1;
                             break;
                             }
@@ -174,8 +195,41 @@ int main(int argc, char* argv[])
                         Nova.radius = 290;
                         Mix_PlayChannel(-1,Start,0);
                     }
-                    SDL_RenderCopy(renderer,backgroundGame,&renderbgRect,NULL);
-                    while(SDL_PollEvent(&e)!=0) if(e.type==SDL_QUIT) quit = true;
+                    while(pause&&!quit) {
+                            while(SDL_PollEvent(&e)!=0)
+                            {
+                                if(e.type==SDL_QUIT) quit = true;
+                                if(e.type==SDL_KEYDOWN&&e.key.keysym.sym==SDLK_ESCAPE) {
+                                        display = menu;
+                                        pause = 0;
+                                        Mix_PlayMusic(menuMusic,-1);
+                                }
+                                if(pauseButton.handleEventInside(&e,2)) pauseButton.currentSprite = BUTTON_MOUSE_OVER;
+                                else pauseButton.currentSprite = BUTTON_MOUSE_OUT;
+                                if(pauseButton.handleEventInside(&e,2)&&e.type == SDL_MOUSEBUTTONDOWN)
+                                {
+                                    pause = 0;
+                                    Mix_PlayChannel(-1,Click,0);
+                                    pauseButton.setRect(RectPauseButton,0,2);
+                                    Mix_ResumeMusic();
+                                }
+                                pauseButton.render(renderer, &RectPauseButton[pauseButton.currentSprite], PauseTexture, 2);
+                            }
+
+                    }
+                    while(SDL_PollEvent(&e)!=0)
+                    {
+                            if(e.type==SDL_QUIT) quit = true;
+                            if(pauseButton.handleEventInside(&e,2)) pauseButton.currentSprite = BUTTON_MOUSE_OVER;
+                            else pauseButton.currentSprite = BUTTON_MOUSE_OUT;
+                            if(pauseButton.handleEventInside(&e,2)&&e.type == SDL_MOUSEBUTTONDOWN)
+                            {
+                                pause = 1;
+                                Mix_PauseMusic();
+                                Mix_PlayChannel(-1,Click,0);
+                                pauseButton.setRect(RectPauseButton,1,2);
+                            }
+                    }
                     const Uint8 *states = SDL_GetKeyboardState(NULL);
                     if( states[SDL_SCANCODE_A] || states[SDL_SCANCODE_LEFT])
                         {
@@ -206,9 +260,9 @@ int main(int argc, char* argv[])
                             Mix_PlayMusic(menuMusic,-1);
                         }
                     else ;
-                //asteroid
-                if(SDL_GetTicks() > lastspawnAster + 5000)
-                    {
+                    //asteroid
+                    if(SDL_GetTicks() > lastspawnAster + 5000)
+                        {
                         lastspawnAster = SDL_GetTicks();
                         int asterAmount = rand()%5;
                         for(int i = 0; i < asterAmount; i++)
@@ -217,8 +271,8 @@ int main(int argc, char* argv[])
                             (asteroids).push_back(a);
                         }
                     }
-                for(int i = 0; i < (asteroids).size(); i++)
-                    {
+                    for(int i = 0; i < (asteroids).size(); i++)
+                        {
                         (asteroids)[i].render(renderer,asterTexture,aster.Width,aster.Height);
                         (asteroids)[i].moving();
 
@@ -237,18 +291,19 @@ int main(int argc, char* argv[])
                             asteroids.erase(asteroids.begin() + i);
                         }
                     }
-                SDL_RenderCopy(renderer, score_gameTexture, NULL, &score_game);
-                renderHealth(renderer,Nova.shipHealthTexture, Nova.health);
-                Nova.render(renderer,Earth.node.renderQuad,Earth.planetQuad,Shoot,bulletExplode);
-                RenderNumber(renderer,number,2,Nova.score);
-                Earth.SetRotation(speedTimer);
-                if(lastscore + 1 == Nova.score) {
+                    pauseButton.render(renderer, &RectPauseButton[pauseButton.currentSprite], PauseTexture, 2);
+                    SDL_RenderCopy(renderer, score_gameTexture, NULL, &score_game);
+                    renderHealth(renderer,Nova.shipHealthTexture, Nova.health);
+                    Nova.render(renderer,Earth.node.renderQuad,Earth.planetQuad,Shoot,bulletExplode);
+                    RenderNumber(renderer,number,2,Nova.score);
+                    Earth.SetRotation(speedTimer);
+                    if(lastscore + 1 == Nova.score) {
                         Earth.node.Restart(),lastscore = Nova.score;
                         Mix_PlayChannel(-1,point,0);
                 }
-                if(speedTimer + 9000 < SDL_GetTicks()) Earth.speed+=0.1f,speedTimer = SDL_GetTicks();
-                Earth.render(renderer);
-                if(Nova.health == 0) {
+                    if(speedTimer + 9000 < SDL_GetTicks()) Earth.speed+=0.1f,speedTimer = SDL_GetTicks();
+                    Earth.render(renderer);
+                    if(Nova.health == 0) {
                     Mix_PauseMusic();
                     Mix_PlayChannel(-1,Over,0);
                     gameover = 1;
@@ -256,7 +311,25 @@ int main(int argc, char* argv[])
                     SDL_Rect dRect = {OVER_POSX,OVER_POSY,OVER_WIDTH,OVER_HEIGHT};
                     SDL_RenderCopy(renderer,gOver,NULL,&dRect);
                 }
-                break;
+                    break;
+                }
+            case helpscene:
+                {
+                    SDL_RenderCopy(renderer,HelpTexture,NULL,NULL);
+                    while(SDL_PollEvent(&e)!=0)
+                    {
+                        if(e.type==SDL_QUIT)    quit = true;
+                        if(e.type==SDL_KEYDOWN&&e.key.keysym.sym==SDLK_ESCAPE) display = menu;
+                        if(backButton.handleEventInside(&e,2)) backButton.currentSprite = BUTTON_MOUSE_OVER;
+                        else backButton.currentSprite = BUTTON_MOUSE_OUT;
+                        if(backButton.handleEventInside(&e,2)&&e.type == SDL_MOUSEBUTTONDOWN) {
+                            display = menu;
+                            Mix_PlayChannel(-1,Click,0);
+                        }
+
+                    }
+                    backButton.render(renderer, &RectBackButton[backButton.currentSprite], backTexture, 2);
+                }
         }
         SDL_RenderPresent( renderer );
         }

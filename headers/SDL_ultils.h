@@ -12,7 +12,7 @@
 
 enum SCENE
 {
-    menu, game
+    menu, game, helpscene
 };
 enum ButtonSprite
 {
@@ -32,19 +32,27 @@ const int TITLE_WIDTH = 800;
 const int TITLE_HEIGHT = 496;
 const int MAIN_BUTTON_WIDTH = 248;
 const int MAIN_BUTTON_HEIGHT = 90;
-const int HIGH_SCORE_MENU_WIDTH = 0;
-const int HIGH_SCORE_MENU_HEIGHT = 0;
+const int PAUSE_BUTTON_WIDTH = 54;
+const int PAUSE_BUTTON_HEIGHT = 54;
+const int GAME_BUTTON_WIDTH = 97;
+const int GAME_BUTTON_HEIGHT = 85;
 const int OVER_WIDTH =  684;
 const int OVER_HEIGHT = 137;
 
 const int TITLE_POSX = 0;
 const int TITLE_POSY = 0;
-const int PLAY_BUTTON_POSX = 272;
-const int PLAY_BUTTON_POSY = 439;
+const int PLAY_BUTTON_POSX = 275;
+const int PLAY_BUTTON_POSY = 385;
 const int EXIT_BUTTON_POSX = 275;
-const int EXIT_BUTTON_POSY = 591;
-const int HIGH_SCORE_MENUPX = 130;
-const int HIGH_SCORE_MENUPY = 429;
+const int EXIT_BUTTON_POSY = 655;
+const int HELP_BUTTON_POSX = 275;
+const int HELP_BUTTON_POSY = 520;
+const int BACK_BUTTON_POSX = 0;
+const int BACK_BUTTON_POSY = 0;
+const int PAUSE_BUTTON_POSX = 0;
+const int PAUSE_BUTTON_POSY = 715;
+const int HIGH_SCORE_MENUPX = 121;
+const int HIGH_SCORE_MENUPY = 739;
 const int HIGH_SCORE_TEXTPX = 0;
 const int HIGH_SCORE_TEXTPY = 7;
 const int HIGH_SCORE_GAMEPX = 165;
