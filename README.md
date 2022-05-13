@@ -3,10 +3,10 @@ Goal:
 
 *Base game: 100%
 
-*Graphics: 20%
+*Graphics: 100%
 
-*Menu: 5%
+*Menu: 99%
 
-*Maps and characters: 0%
+*Maps and characters: 99%
 
-*Leveling system:0%
+*Leveling system:99%
