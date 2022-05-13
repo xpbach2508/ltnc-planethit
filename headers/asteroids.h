@@ -1,13 +1,7 @@
 #ifndef ASTEROIDS_H
 #define ASTEROIDS_H
-#include <iostream>
-#include <time.h>
-#include <vector>
-#include <stdlib.h>
-#include <stdio.h>
-#include <SDL.h>
-#include <SDL_image.h>
-#include <cmath>
+
+#include "SDL_ultils.h"
 
 using namespace std;
 #define pff pair<float,float>
@@ -26,6 +20,7 @@ class asteroid
         void moving();
 
         SDL_FRect asterQuad{};
+        Circle asterCir{};
 };
 
 

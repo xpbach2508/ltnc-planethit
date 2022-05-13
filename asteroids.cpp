@@ -1,15 +1,5 @@
-#include <iostream>
-#include <time.h>
-#include <stdlib.h>
-#include <vector>
-#include <stdio.h>
-#include <SDL.h>
-#include <SDL_image.h>
-#include <cmath>
-
 #include "headers/asteroids.h"
 
-using namespace std;
 #define f first
 #define s second
 
@@ -46,12 +36,15 @@ asteroid::asteroid()
             velocity.s = (rand()%41-20) / 20 * rand2;
             break;
     }
+
 }
 void asteroid::render(SDL_Renderer* renderer,SDL_Texture* asterTexture, float asterWidth, float asterHeight)
 {
     asterQuad = { pos.f, pos.s , asterWidth, asterWidth };
+    asterCir = {pos.f-asterWidth/2, pos.s - asterHeight/2, asterWidth/2};
     //Render to screen
     SDL_RenderCopyExF( renderer, asterTexture, NULL, &asterQuad, rotation, NULL, SDL_FLIP_HORIZONTAL);
+    //std::cout << "rendered asteroid" << std::endl;
 }
 
 void asteroid::moving()

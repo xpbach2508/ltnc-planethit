@@ -1,13 +1,5 @@
 #ifndef PLANET_H
 #define PLANET_H
-#include <iostream>
-#include <time.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <cmath>
-#include <SDL.h>
-#include <SDL_image.h>
-
 #include "SDL_ultils.h"
 
 #define Pi 3.14159265
@@ -16,9 +8,7 @@ using namespace std;
 class   Node
 {
     public:
-        ~Node();
-        void free();
-        void render(SDL_Renderer* renderer=NULL);
+        void render(SDL_Renderer* renderer=NULL, Circle* planetCircle = NULL);
         float x,y;
         float rotation;
         SDL_Texture* Texture;
@@ -28,13 +18,12 @@ class   Node
         void Restart();
         //Collision Box
         SDL_FRect renderQuad;
+        Circle nodeCir;
 
 };
 class   Planet
 {
     public:
-        //health
-        int health;
         //Rotation
         float rotation;
         void SetRotation(Uint32 value);
@@ -63,5 +52,6 @@ class   Planet
         float Height;
         //Collision Box
         SDL_FRect planetQuad;
+        Circle planetCir;
 };
 #endif // PLANET_H

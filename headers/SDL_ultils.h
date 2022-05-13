@@ -2,17 +2,27 @@
 #define SDL_UTILS_H
 #include <iostream>
 #include <sstream>
+#include <cstring>
 #include <string>
 #include <fstream>
-#include "asteroids.h"
+#include <time.h>
+#include <vector>
+#include <stdlib.h>
+#include <stdio.h>
+#include <cmath>
+
+#include <SDL.h>
+#include <SDL_image.h>
 #include <SDL_mixer.h>
+#include <SDL_ttf.h>
 
 #define MAIN_BUTTON 1
 #define GAME_BUTTON 2
+#define SKIN_PICKED 3
 
 enum SCENE
 {
-    menu, game, helpscene
+    menu, game, helpscene, custom
 };
 enum ButtonSprite
 {
@@ -24,29 +34,42 @@ struct sizeAsset
 {
     float Width,Height;
 };
+struct Circle
+{
+    float x,y;
+    float r;
+};
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 800;
 const std::string WINDOW_TITLE = "Planet Hit";
 
+const int SHIP_SIZE = 115;
+const int PLANET_SIZE = 310;
+const int BULLET_SIZE = 30;
+const int NODE_SIZE = 50;
+const int ASTER_SIZE = 50;
+
 const int TITLE_WIDTH = 800;
 const int TITLE_HEIGHT = 496;
-const int MAIN_BUTTON_WIDTH = 248;
-const int MAIN_BUTTON_HEIGHT = 90;
-const int PAUSE_BUTTON_WIDTH = 54;
-const int PAUSE_BUTTON_HEIGHT = 54;
+const int MAIN_BUTTON_WIDTH = 226;
+const int MAIN_BUTTON_HEIGHT = 81;
 const int GAME_BUTTON_WIDTH = 97;
 const int GAME_BUTTON_HEIGHT = 85;
+const int SKIN_PICKED_WIDTH = 70;
+const int SKIN_PICKED_HEIGHT = 105;
 const int OVER_WIDTH =  684;
 const int OVER_HEIGHT = 137;
 
 const int TITLE_POSX = 0;
 const int TITLE_POSY = 0;
-const int PLAY_BUTTON_POSX = 275;
-const int PLAY_BUTTON_POSY = 385;
-const int EXIT_BUTTON_POSX = 275;
-const int EXIT_BUTTON_POSY = 655;
-const int HELP_BUTTON_POSX = 275;
-const int HELP_BUTTON_POSY = 520;
+const int PLAY_BUTTON_POSX = 287;
+const int PLAY_BUTTON_POSY = 359;
+const int EXIT_BUTTON_POSX = 287;
+const int EXIT_BUTTON_POSY = 689;
+const int HELP_BUTTON_POSX = 287;
+const int HELP_BUTTON_POSY = 579;
+const int OPTION_BUTTON_POSX = 287;
+const int OPTION_BUTTON_POSY = 469;
 const int BACK_BUTTON_POSX = 0;
 const int BACK_BUTTON_POSY = 0;
 const int PAUSE_BUTTON_POSX = 0;
@@ -65,7 +88,16 @@ const int OVER_POSX = 57;
 const int OVER_POSY = 612;
 
 
-void Game_Over();
+bool checkCollision2( Circle& a, Circle& b );
+bool checkCollision1( Circle& a, SDL_FRect& b );
+
+std::vector<int> LoadSetting(std::string path);
+
+void UpdateSetting(std::string path, const int& ship, const int& bullet, const int& planet);
+
+void renderText(const std::string& text, TTF_Font* font, SDL_Renderer* renderer);
+
+void freeTexture(SDL_Texture* texture);
 
 void renderHealth(SDL_Renderer* renderer, SDL_Texture* texture, int& health);
 
@@ -82,7 +114,5 @@ void logSDLError(std::ostream& os, const std::string &msg, bool fatal = false);
 void quitSDL(SDL_Window* window, SDL_Renderer* renderer);
 
 SDL_Texture* loadTexture(std::string path, SDL_Renderer* renderer);
-
-bool CheckCollision(SDL_FRect& a, SDL_FRect& b);
 
 #endif // SDL_UTILS_H

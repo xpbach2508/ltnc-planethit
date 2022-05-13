@@ -1,7 +1,5 @@
 #include "headers/ship.h"
 
-using namespace std;
-
 //BULLET
 Bullet::Bullet(pff _position, float BulletW, float BulletH)
 {
@@ -18,18 +16,10 @@ void Ship::renderBullet(SDL_Renderer* renderer, int& i, float& degreee)
 {
     SDL_FRect renderQuad = { Bullets[i].pos.f, Bullets[i].pos.s, BulletWidth, BulletHeight };
     Bullets[i].bulletQuad = { Bullets[i].pos.f, Bullets[i].pos.s, BulletWidth, BulletHeight };
+    Bullets[i].bulletCir = {Bullets[i].pos.f + BulletWidth/2, Bullets[i].pos.s + BulletHeight/2, BulletWidth/2};
+    //need to be fixed
     //Render to screen
     SDL_RenderCopyExF( renderer, BulletTexture, NULL, &renderQuad,degreee, NULL, SDL_FLIP_HORIZONTAL);
-}
-void Ship::freeBullet()
-{
-    if( shipTexture != NULL )
-	{
-		SDL_DestroyTexture( BulletTexture );
-		BulletTexture = NULL;
-        BulletHeight = 0;
-		BulletWidth = 0;
-	}
 }
 
 //SHIP
@@ -37,7 +27,7 @@ Ship::Ship()
 {
     pos.f = SCREEN_WIDTH/2 + sin(rotation*Pi/180)*radius-shipWidth/2;
     pos.s = SCREEN_HEIGHT/2 - cos(rotation*Pi/180)*radius-shipHeight/2;
-    health = 2;
+    health = 5;
 }
 void Ship::Move(int i)
 {
@@ -49,14 +39,14 @@ void Ship::Move(int i)
 }
 void Ship::Shoot()
 {
-    pos.f = SCREEN_WIDTH/2 + sin(rotation*Pi/180)*radius - BulletWidth/2.0f;
-    pos.s = SCREEN_HEIGHT/2 - cos(rotation*Pi/180)*radius - BulletHeight/2.0f;
+    pos.f = SCREEN_WIDTH/2 + sin(rotation*Pi/180)*radius - BulletWidth/2;
+    pos.s = SCREEN_HEIGHT/2 - cos(rotation*Pi/180)*radius - BulletHeight/2;
     Bullet fire(pos,BulletWidth,BulletWidth);
     Bullets.push_back(fire);
     Bullets[Bullets.size()-1].degree = rotation;
 }
 
-void Ship::render(SDL_Renderer* renderer,SDL_FRect nodeQuad,SDL_FRect planetQuad,Mix_Chunk* shot,Mix_Chunk* collide)
+void Ship::render(SDL_Renderer* renderer,Circle* nodeCir,Circle* planetCir,Mix_Chunk* shot,Mix_Chunk* collide)
 {
     if(rotation < 0) {rotation += 360;}
     pos.f = SCREEN_WIDTH/2 + sin(rotation*Pi/180)*radius-shipWidth/2;
@@ -69,22 +59,24 @@ void Ship::render(SDL_Renderer* renderer,SDL_FRect nodeQuad,SDL_FRect planetQuad
         {
             Bullets.erase(Bullets.begin() + i);
         }
-        if(CheckCollision(Bullets[i].bulletQuad,nodeQuad))
+        if(checkCollision2(Bullets[i].bulletCir,*nodeCir))
         {
             score++;
             //cout << score << endl;
             Bullets.erase(Bullets.begin() + i);
             Mix_PlayChannel(-1,collide,0);
         }
-        else if(CheckCollision(Bullets[i].bulletQuad,planetQuad)) {
+        else if(checkCollision2(Bullets[i].bulletCir,*planetCir)) {
                 Bullets.erase(Bullets.begin() + i);
-                cout << Bullets[i].pos.f << " " << Bullets[i].pos.s << endl;
+                std::cout << Bullets[i].pos.f << " " << Bullets[i].pos.s << std::endl;
                 Mix_PlayChannel(-1,collide,0);
         }
         Bullets[i].Move();
         renderBullet(renderer,i,Bullets[i].degree);
+        //std::cout << "rendered bullet" << std::endl;
     }
     SDL_RenderCopyExF( renderer, shipTexture, NULL, &shipQuad, rotation, NULL, SDL_FLIP_HORIZONTAL);
+    //std::cout << "rendered ship" << std::endl;
 }
 Ship::~Ship()
 {
@@ -94,12 +86,8 @@ Ship::~Ship()
 void Ship::free()
 {
 	//Free texture if it exists
-	if( shipTexture != NULL )
-	{
-		SDL_DestroyTexture( shipTexture );
-		shipTexture = NULL;
-        shipHeight = 0;
-		shipWidth = 0;
-	}
+	freeTexture(shipTexture);
+	freeTexture(BulletTexture);
+    freeTexture(shipHealthTexture);
 }
 
