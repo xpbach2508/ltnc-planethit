@@ -2,8 +2,6 @@
 #define PLANET_H
 #include "SDL_ultils.h"
 
-#define Pi 3.14159265
-
 using namespace std;
 class   Node
 {

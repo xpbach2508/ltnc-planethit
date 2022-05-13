@@ -128,7 +128,7 @@ double distanceSquared( float x1, float y1, float x2, float y2 )
     float deltaY = y2 - y1;
     return deltaX*deltaX + deltaY*deltaY;
 }
-bool checkCollision1( Circle& a, SDL_FRect& b )
+bool checkCollision1( Circle& a, SDL_FRect& b, int degree)
 {
     //Closest point on collision box
     float cX, cY;
@@ -138,9 +138,9 @@ bool checkCollision1( Circle& a, SDL_FRect& b )
     {
         cX = b.x;
     }
-    else if( a.x > b.x + b.w )
+    else if( a.x > b.x + b.w*cos(degree*Pi/180) )
     {
-        cX = b.x + b.w;
+        cX = b.x + b.w*cos(degree*Pi/180);
     }
     else
     {
@@ -151,9 +151,9 @@ bool checkCollision1( Circle& a, SDL_FRect& b )
     {
         cY = b.y;
     }
-    else if( a.y > b.y + b.h )
+    else if( a.y > b.y + b.h*sin(degree*Pi/180) )
     {
-        cY = b.y + b.h;
+        cY = b.y + b.h*sin(degree*Pi/180);
     }
     else
     {

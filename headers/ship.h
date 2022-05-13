@@ -47,6 +47,7 @@ public:
     void Shoot();
     //Check collision
     SDL_FRect shipQuad{};
+    Circle shipCir;
     //score
     int score = 0;
 

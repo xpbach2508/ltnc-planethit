@@ -16,6 +16,7 @@
 #include <SDL_mixer.h>
 #include <SDL_ttf.h>
 
+#define Pi 3.14159265
 #define MAIN_BUTTON 1
 #define GAME_BUTTON 2
 #define SKIN_PICKED 3
@@ -89,7 +90,7 @@ const int OVER_POSY = 612;
 
 
 bool checkCollision2( Circle& a, Circle& b );
-bool checkCollision1( Circle& a, SDL_FRect& b );
+bool checkCollision1( Circle& a, SDL_FRect& b ,int degree);
 
 std::vector<int> LoadSetting(std::string path);
 

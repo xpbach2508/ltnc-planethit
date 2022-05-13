@@ -52,6 +52,7 @@ void Ship::render(SDL_Renderer* renderer,Circle* nodeCir,Circle* planetCir,Mix_C
     pos.f = SCREEN_WIDTH/2 + sin(rotation*Pi/180)*radius-shipWidth/2;
     pos.s = SCREEN_HEIGHT/2 - cos(rotation*Pi/180)*radius-shipHeight/2;
     shipQuad = { pos.f, pos.s, shipWidth, shipHeight };
+    shipCir = {pos.f + shipWidth/2, pos.s + shipHeight/2, shipWidth/2};
 
     for(int i = 0; i < Bullets.size(); i++)
     {

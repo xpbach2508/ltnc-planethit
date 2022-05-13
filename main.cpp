@@ -316,7 +316,8 @@ int main(int argc, char* argv[])
                         if(checkCollision2(asteroids[i].asterCir,Earth->planetCir))
                             asteroids.erase(asteroids.begin()+i);
 
-                        if(checkCollision1(asteroids[i].asterCir,Nova->shipQuad))
+                        //if(checkCollision1(asteroids[i].asterCir,Nova->shipQuad,Nova->rotation))
+                        if(checkCollision2(asteroids[i].asterCir,Nova->shipCir))
                         {
                             asteroids.erase(asteroids.begin()+i);
                             if(lastDeath + 1000 < GameTime) {
