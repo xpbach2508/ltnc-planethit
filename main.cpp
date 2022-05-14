@@ -349,7 +349,7 @@ int main(int argc, char* argv[])
                     }
                     Earth->render(renderer);
 
-                    if(speedTimer + 9000 < SDL_GetTicks()) Earth->speed+=0.1f,speedTimer = SDL_GetTicks();//Tang dan toc do quay cho Planet
+                    if(speedTimer + 9000 < SDL_GetTicks()) Earth->speed+=0.2f,speedTimer = SDL_GetTicks();//Tang dan toc do quay cho Planet
                     if(Nova->health == 0) { //Khi ma game over thi cho vao vong lap
                         Mix_PauseMusic();
                         Mix_PlayChannel(-1,Over,0);

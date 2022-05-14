@@ -32,9 +32,9 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="SDL_utils.cpp" />
+		<Unit filename="GAME_utils.cpp" />
 		<Unit filename="asteroids.cpp" />
-		<Unit filename="headers/SDL_ultils.h" />
+		<Unit filename="headers/GAME_ultils.h" />
 		<Unit filename="headers/asteroids.h" />
 		<Unit filename="headers/planet.h" />
 		<Unit filename="headers/ship.h" />
