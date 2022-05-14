@@ -3,7 +3,7 @@
 #include <iostream>
 #include <SDL.h>
 #include <SDL_image.h>
-#include "SDL_ultils.h"
+#include "GAME_ultils.h"
 using namespace std;
 
 class Button

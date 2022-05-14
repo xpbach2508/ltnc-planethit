@@ -1,6 +1,6 @@
 #ifndef PLANET_H
 #define PLANET_H
-#include "SDL_ultils.h"
+#include "GAME_ultils.h"
 
 using namespace std;
 class   Node

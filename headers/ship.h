@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "planet.h"
-#include "SDL_ultils.h"
+#include "GAME_ultils.h"
 
 #define f first
 #define s second

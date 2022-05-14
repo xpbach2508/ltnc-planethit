@@ -1,7 +1,7 @@
 #ifndef ASTEROIDS_H
 #define ASTEROIDS_H
 
-#include "SDL_ultils.h"
+#include "GAME_ultils.h"
 
 using namespace std;
 #define pff pair<float,float>

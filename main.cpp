@@ -11,7 +11,7 @@
 #include "headers/planet.h"
 #include "headers/ship.h"
 #include "headers/asteroids.h"
-#include "headers/SDL_ultils.h"
+#include "headers/GAME_ultils.h"
 #include "headers/ui.h"
 
 #define f first
@@ -22,13 +22,13 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
+    //Initialize things
     srand(time(NULL));
     SCENE display = menu;
     SDL_Window* window;
     SDL_Renderer* renderer;
     initSDL(window, renderer);
 
-    //Initialize things
     //Game
     Planet* Earth = new Planet;
     Ship* Nova = new Ship;
@@ -89,9 +89,13 @@ int main(int argc, char* argv[])
     //Game texture
     vector<int> LoadedSetting = LoadSetting("settings.txt");
     Nova->shipTexture = shipS[LoadedSetting[0]];initSkin(&skinShip1, &skinShip2, &skinShip3, LoadedSetting[0]);
-    if(LoadedSetting[0]==1) Nova->shipHeight/=1.66;if(LoadedSetting[0]==2)Nova->shipWidth /=2;if(LoadedSetting[0]==3)Nova->shipWidth /=1.8,Nova->shipHeight/=1.5;
+    if(LoadedSetting[0]==1) Nova->shipHeight/=1.66;
+    if(LoadedSetting[0]==2) Nova->shipWidth /=2;
+    if(LoadedSetting[0]==3) Nova->shipWidth /=1.8,Nova->shipHeight/=1.5;
+
     Nova->BulletTexture = bulletS[LoadedSetting[1]];initSkin(&skinBullet1, &skinBullet2, &skinBullet3, LoadedSetting[1]);
     Earth->Texture = planetS[LoadedSetting[2]];initSkin(&skinPlanet1, &skinPlanet2, &skinPlanet3, LoadedSetting[2]);
+
     Nova->shipHealthTexture = loadTexture("images/health.png",renderer);
     Earth->node.Texture = loadTexture("images/node.png",renderer);
     SDL_Texture* asterTexture = loadTexture("images/asteroid.png",renderer);
@@ -321,11 +325,11 @@ int main(int argc, char* argv[])
                         {
                             asteroids.erase(asteroids.begin()+i);
                             if(lastDeath + 1000 < GameTime) {
-                                //Nova->health--;
+                                Nova->health--;
                                 Mix_PlayChannel(-1,get_hit,0);
                                 lastDeath = GameTime;
                             }
-                            cout << "wtf" << endl;
+                            //cout << "wtf" << endl;
                         }
 
                         if((asteroids[i].pos.f > 800 || asteroids[i].pos.f < 0) && (asteroids[i].pos.s < 0 || asteroids[i].pos.s > 800))
@@ -402,7 +406,7 @@ int main(int argc, char* argv[])
                     LoadedSetting = LoadSetting("settings.txt");
                     if(skinShip1.picked) {Nova->shipTexture = shipS[1];Nova->shipWidth = SHIP_SIZE;Nova->shipHeight = SHIP_SIZE/1.66;UpdateSetting("settings.txt", 1, LoadedSetting[1], LoadedSetting[2]);}
                     if(skinShip2.picked) {Nova->shipTexture = shipS[2];Nova->shipWidth = SHIP_SIZE/2;Nova->shipHeight = SHIP_SIZE;UpdateSetting("settings.txt", 2, LoadedSetting[1], LoadedSetting[2]);}
-                    if(skinShip3.picked) {Nova->shipTexture = shipS[3];Nova->shipWidth = SHIP_SIZE/1.8;Nova->shipHeight/1.5;UpdateSetting("settings.txt", 3, LoadedSetting[1], LoadedSetting[2]);}
+                    if(skinShip3.picked) {Nova->shipTexture = shipS[3];Nova->shipWidth = SHIP_SIZE/1.8;Nova->shipHeight=SHIP_SIZE/1.5;UpdateSetting("settings.txt", 3, LoadedSetting[1], LoadedSetting[2]);}
                     LoadedSetting = LoadSetting("settings.txt");
                     if(skinBullet1.picked) Nova->BulletTexture = bulletS[1],UpdateSetting("settings.txt", LoadedSetting[0], 1, LoadedSetting[2]);
                     if(skinBullet2.picked) Nova->BulletTexture = bulletS[2],UpdateSetting("settings.txt", LoadedSetting[0], 2, LoadedSetting[2]);
@@ -432,6 +436,7 @@ int main(int argc, char* argv[])
         SDL_RenderPresent( renderer );
         }
     //FREE
+    {
     delete Earth;
     delete Nova;
     asteroids.clear();
@@ -447,7 +452,7 @@ int main(int argc, char* argv[])
     freeTexture(HelpTexture);
     freeTexture(customTexture);
     freeTexture(backTexture);
-    //for(int i = 0; i <= 3; i++) {freeTexture(shipS[i]);freeTexture(planetS[i]);freeTexture(bulletS[i]);}
+    for(int i = 1; i <= 3; i++) {freeTexture(shipS[i]);freeTexture(planetS[i]);freeTexture(bulletS[i]);}
     Mix_FreeMusic(gameMusic);
     Mix_FreeMusic(menuMusic);
     Mix_FreeChunk(Click);
@@ -467,5 +472,6 @@ int main(int argc, char* argv[])
      point = nullptr;
      bulletExplode = nullptr;
     quitSDL(window, renderer);
+    }
     return 0;
 }
